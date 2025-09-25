@@ -6,7 +6,7 @@ Widget buildDropdown(String label, List<String> items, String selected, Function
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(label, style: AppTextStyles.heading4),
+      Text(label, style: AppTextStyles.body),
       SizedBox(height: 6),
       Container(
         padding: EdgeInsets.symmetric(horizontal: 12),

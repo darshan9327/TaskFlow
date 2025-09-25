@@ -29,7 +29,6 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: backgroundColor,
       elevation: 0,
       actions: actions,
-      // leading: leading ? InkWell(onTap: () => Get.back(), child: Icon(Icons.arrow_back, color: AppColors.white)) : null,
     );
   }
 

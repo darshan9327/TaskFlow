@@ -1,57 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:task_flow/presentation/theme/app_theme.dart';
 
-class TaskCard extends StatefulWidget {
+class TaskCard extends StatelessWidget {
   final String title;
   final String time;
+  final String status; // ✅ "pending" or "completed"
   final Color? color;
   final bool showCheckbox;
+  final ValueChanged<bool?>? onStatusChanged;
+  final VoidCallback? onTap;
 
-  const TaskCard({super.key, required this.title, required this.time, this.color, this.showCheckbox = false});
-
-  @override
-  State<TaskCard> createState() => _TaskCardState();
-}
-
-class _TaskCardState extends State<TaskCard> {
-  bool isChecked = false; // local state for checkbox
+  const TaskCard({
+    super.key,
+    required this.title,
+    required this.time,
+    required this.status,
+    this.color,
+    this.showCheckbox = false,
+    this.onStatusChanged,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final isCompleted = status == "completed";
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border(left: BorderSide(color: widget.color ?? AppColors.secondary, width: 4)),
-        boxShadow: [BoxShadow(color: Colors.grey.withAlpha(50), spreadRadius: 1, blurRadius: 4)],
+        border: Border(
+          left: BorderSide(color: color ?? AppColors.secondary, width: 4),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withAlpha(50),
+            spreadRadius: 1,
+            blurRadius: 4,
+          )
+        ],
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         title: Text(
-          widget.title,
+          title,
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            decoration: isChecked ? TextDecoration.lineThrough : null,
-            color: isChecked ? Colors.grey : Colors.black,
+            decoration: isCompleted ? TextDecoration.lineThrough : null,
+            color: isCompleted ? Colors.grey : Colors.black,
           ),
         ),
         subtitle: Text(
-          widget.time,
-          style: TextStyle(decoration: isChecked ? TextDecoration.lineThrough : null, color: isChecked ? Colors.grey : Colors.black54),
+          "$time • ${isCompleted ? "Completed" : "Pending"}",
+          style: TextStyle(
+            decoration: isCompleted ? TextDecoration.lineThrough : null,
+            color: isCompleted ? Colors.grey : Colors.black54,
+          ),
         ),
-        leading:
-            widget.showCheckbox
-                ? Checkbox(
-                  value: isChecked,
-                  onChanged: (value) {
-                    setState(() {
-                      isChecked = value ?? false;
-                    });
-                  },
-                  activeColor: widget.color ?? AppColors.secondary,
-                )
-                : Container(width: 10, height: 10, decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle)),
+        leading: showCheckbox
+            ? Checkbox(
+          value: isCompleted,
+          onChanged: onStatusChanged,
+          activeColor: color ?? AppColors.secondary,
+        )
+            : Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        onTap: onTap,
       ),
     );
   }

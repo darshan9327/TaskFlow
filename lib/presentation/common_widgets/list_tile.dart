@@ -22,7 +22,7 @@ class CommonListTile extends StatelessWidget {
         subtitle:
             subtitle == null
                 ? null
-                : Text(subtitle!, style: AppTextStyles.heading4.copyWith(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w300)),
+                : Text(subtitle!, style: AppTextStyles.body.copyWith(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w300)),
         trailing: SizedBox(
           width: 30,
           height: 30,

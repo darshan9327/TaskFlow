@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:task_flow/presentation/common_widgets/list_tile.dart';
 import 'package:task_flow/presentation/screens/add_new_task/add_task_screen.dart';
 import 'package:task_flow/presentation/screens/profile/profile_screen.dart';
+import 'package:task_flow/presentation/screens/task_detail_screen/task_detail_screen.dart';
 import 'package:task_flow/presentation/screens/task_list/task_list_screen.dart';
 
 import '../../common_widgets/appbar.dart';
@@ -28,7 +29,7 @@ class _DashboardState extends State<Dashboard> {
       appBar: CommonAppBar(
         title: "🔐 Dashboard",
         actions: [
-          InkWell(onTap: () => Get.to(ProfileScreen()), child: Padding(padding: const EdgeInsets.only(right: 20.0), child: Icon(Icons.settings))),
+          InkWell(onTap: () => Get.to(ProfileScreen()), child: Padding(padding: const EdgeInsets.only(right: 20.0), child: Icon(Icons.person))),
         ],
       ),
       floatingActionButton: Container(
@@ -45,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Column(
             children: [
               CommonListTile(title: "Good Morning!", onTap: () {}, text: "🔔", subtitle: "John Doe"),
@@ -58,16 +59,18 @@ class _DashboardState extends State<Dashboard> {
                 mainAxisSpacing: 15,
                 childAspectRatio: 1.5,
                 children: [
-                  StatCard(title: "Total Tasks", value: "12", onPressed: () => Get.to(TaskListScreen())),
-                  StatCard(title: "Completed", value: "8"),
-                  StatCard(title: "Pending", value: "4"),
+                  StatCard(title: "Total Tasks", value: "12", onPressed: () => Get.to(() => TaskListScreen(), arguments: 0)),
+                  StatCard(title: "Completed", value: "8",onPressed: () => Get.to(() => TaskListScreen(), arguments: 2)),
+                  StatCard(title: "Pending", value: "4", onPressed: () => Get.to(() => TaskListScreen(), arguments: 1)),
                 ],
               ),
               SizedBox(height: Get.height * 0.020),
-              Align(alignment: Alignment.topLeft, child: Text("Today's Tasks", style: AppTextStyles.heading4)),
+              Align(alignment: Alignment.topLeft, child: Text("Today's Tasks", style: AppTextStyles.body)),
               SizedBox(height: Get.height * 0.008),
               ...tasks.map((task) {
-                return TaskCard(title: task['title']!, time: task['time']!, color: task['color']!);
+                return TaskCard(title: task['title']!, time: task['time']!, color: task['color']!,onTap: (){
+                  Get.to(TaskDetailScreen(title: task['title'], description: "ABC", category: "Work", priority: "High", dueDate: task['time']));
+                }, status: '',);
               }),
             ],
           ),

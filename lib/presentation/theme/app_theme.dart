@@ -19,8 +19,6 @@ class AppTextStyles {
 
   static const TextStyle heading3 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.text);
 
-  static const TextStyle heading4 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.text);
-
   static const TextStyle body = TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: AppColors.text);
 
   static const TextStyle caption = TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColors.text);

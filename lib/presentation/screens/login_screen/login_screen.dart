@@ -21,54 +21,61 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(title: "🔐 Login Screen"),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            SizedBox(height: Get.height * 0.030),
+      body: GestureDetector(
+        onTap: (){
+          FocusScope.of(context).unfocus();
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              children: [
+                SizedBox(height: Get.height * 0.030),
 
-            Text("📋", style: TextStyle(fontSize: 28)),
-            SizedBox(height: Get.height * 0.020),
+                Text("📋", style: TextStyle(fontSize: 28)),
+                SizedBox(height: Get.height * 0.020),
 
-            Text("TaskFlow", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.primary)),
-            SizedBox(height: Get.height * 0.010),
+                Text("TaskFlow", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                SizedBox(height: Get.height * 0.010),
 
-            Divider(color: AppColors.primary, thickness: 2),
-            SizedBox(height: Get.height * 0.010),
+                Divider(color: AppColors.primary, thickness: 2),
+                SizedBox(height: Get.height * 0.010),
 
-            Text("Streamline Your Productivity", style: AppTextStyles.body),
-            SizedBox(height: Get.height * 0.060),
+                Text("Streamline Your Productivity", style: AppTextStyles.body),
+                SizedBox(height: Get.height * 0.060),
 
-            Align(alignment: Alignment.topLeft, child: Text("Email", style: AppTextStyles.heading4)),
-            SizedBox(height: Get.height * 0.008),
+                Align(alignment: Alignment.topLeft, child: Text("Email", style: AppTextStyles.body)),
+                SizedBox(height: Get.height * 0.008),
 
-            CommonTextFormField(controller: emailController),
-            SizedBox(height: Get.height * 0.020),
+                CommonTextFormField(controller: emailController,hintText: "Enter your email",),
+                SizedBox(height: Get.height * 0.020),
 
-            Align(alignment: Alignment.topLeft, child: Text("Password", style: AppTextStyles.heading4)),
-            SizedBox(height: Get.height * 0.008),
+                Align(alignment: Alignment.topLeft, child: Text("Password", style: AppTextStyles.body)),
+                SizedBox(height: Get.height * 0.008),
 
-            CommonTextFormField(controller: passwordController),
-            SizedBox(height: Get.height * 0.050),
+                CommonTextFormField(controller: passwordController,hintText: "Enter your password"),
+                SizedBox(height: Get.height * 0.050),
 
-            CommonContainer(
-              text: "Login",
-              onPressed: () {
-                Get.offAll(Dashboard());
-              },
+                CommonContainer(
+                  text: "Login",
+                  onPressed: () {
+                    Get.offAll(Dashboard());
+                  },
+                ),
+                SizedBox(height: Get.height * 0.020),
+                CommonContainer(text: "Sign in with Google", color: AppColors.third, onPressed: () {}),
+                SizedBox(height: Get.height * 0.030),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(text: "Don't have an account? ", style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w300)),
+                      TextSpan(text: "Sign Up", style: AppTextStyles.body.copyWith(color: AppColors.primary, fontSize: 14)),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: Get.height * 0.020),
-            CommonContainer(text: "Sign in with Google", color: AppColors.third, onPressed: () {}),
-            SizedBox(height: Get.height * 0.030),
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(text: "Don't have an account? ", style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w300)),
-                  TextSpan(text: "Sign Up", style: AppTextStyles.body.copyWith(color: AppColors.primary, fontSize: 14)),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
