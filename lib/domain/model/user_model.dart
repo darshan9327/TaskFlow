@@ -1,4 +1,5 @@
-import '../entities/user_entity_repository.dart';
+
+import '../../data/entities/user_entity_repository.dart';
 
 class UserModel extends UserEntity {
   UserModel({
@@ -7,7 +8,7 @@ class UserModel extends UserEntity {
     required super.email,
     required super.mobileNo,
     super.profilePicUrl,
-    this.bio = '', // add bio
+    this.bio = '',
   });
 
   final String bio;
@@ -19,7 +20,7 @@ class UserModel extends UserEntity {
       'email': email,
       'mobileNo': mobileNo,
       'profilePicUrl': profilePicUrl,
-      'bio': bio, // include bio
+      'bio': bio,
       'createdAt': DateTime.now(),
     };
   }

@@ -1,4 +1,4 @@
-import '../../data/user_repository_impl/auth_repository_impl.dart';
+import '../repositories/auth_repository_impl.dart';
 
 class GetUserDetailsUseCase {
   final UserRepository repository;

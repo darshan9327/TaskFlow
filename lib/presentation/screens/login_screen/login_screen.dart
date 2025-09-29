@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Align(alignment: Alignment.topLeft, child: Text("Password", style: AppTextStyles.body)),
                 SizedBox(height: Get.height * 0.008),
 
-                CommonTextFormField(controller: passwordController,hintText: "Enter your password"),
+                CommonTextFormField(controller: passwordController,hintText: "Enter your password",keyboardType: TextInputType.visiblePassword),
                 SizedBox(height: Get.height * 0.050),
 
                 CommonContainer(

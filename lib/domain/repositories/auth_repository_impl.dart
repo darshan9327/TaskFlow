@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import '../entities/user_entity_repository.dart';
-import '../model/user_model.dart';
+import 'package:task_flow/domain/model/user_model.dart';
+import '../../data/entities/user_entity_repository.dart';
 
 // ======================= SignUp =======================//
 class AuthRepositoryImpl implements AuthRepository {

@@ -4,7 +4,7 @@ import 'package:task_flow/presentation/theme/app_theme.dart';
 class TaskCard extends StatelessWidget {
   final String title;
   final String time;
-  final String status; // ✅ "pending" or "completed"
+  final String status;
   final Color? color;
   final bool showCheckbox;
   final ValueChanged<bool?>? onStatusChanged;

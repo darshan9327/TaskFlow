@@ -18,11 +18,11 @@ class CommonListTile extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        title: Text(title, style: AppTextStyles.heading3.copyWith(color: Colors.white, fontWeight: FontWeight.w400)),
+        title: Text(title, style: AppTextStyles.heading3.copyWith(color: Colors.white,fontSize: 20,fontWeight: FontWeight.w400)),
         subtitle:
             subtitle == null
                 ? null
-                : Text(subtitle!, style: AppTextStyles.body.copyWith(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w300)),
+                : Text(subtitle!, style: AppTextStyles.body.copyWith(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w400)),
         trailing: SizedBox(
           width: 30,
           height: 30,

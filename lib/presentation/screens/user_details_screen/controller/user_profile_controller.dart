@@ -1,4 +1,3 @@
-// presentation/screens/profile/controller/profile_controller.dart
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -45,8 +44,6 @@ class ProfileController extends GetxController {
         'mobileNo': phone.value,
         'bio': bio.value,
       });
-
-      // Update local state too
       phone.value = phone.value;
 
       Get.snackbar(

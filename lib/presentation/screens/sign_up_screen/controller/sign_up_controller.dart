@@ -20,7 +20,6 @@ class SignUpController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Call use case to create user & upload image
       await _signUpUseCase.execute(
         fullName: fullName,
         email: email,
@@ -37,7 +36,6 @@ class SignUpController extends GetxController {
 
       Get.offAll(() => Dashboard());
     } catch (e) {
-      // Error
       Get.snackbar(
         'Error',
         e.toString(),
