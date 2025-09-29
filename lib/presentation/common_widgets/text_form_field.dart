@@ -6,6 +6,7 @@ class CommonTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType? keyboardType;
   final String? hintText;
+  final String? prefixText;
   final int? maxLines;
   final int? maxLength;
   final FormFieldValidator<String>? validator;
@@ -21,6 +22,7 @@ class CommonTextFormField extends StatelessWidget {
     required this.controller,
     this.keyboardType,
     this.hintText,
+    this.prefixText,
     this.maxLines = 1,
     this.maxLength,
     this.validator,
@@ -30,6 +32,7 @@ class CommonTextFormField extends StatelessWidget {
     this.hintColor,
     this.suffix,
     this.obscureText = false,
+    Function(dynamic val)? onChanged,
   });
 
   @override
@@ -49,6 +52,7 @@ class CommonTextFormField extends StatelessWidget {
 
       decoration: InputDecoration(
         prefixIcon: prefix,
+        prefixText: prefixText,
         suffixIcon: suffix,
         isDense: true,
         filled: true,

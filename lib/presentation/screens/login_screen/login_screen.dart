@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_flow/presentation/common_widgets/button.dart';
 import 'package:task_flow/presentation/common_widgets/text_form_field.dart';
 import 'package:task_flow/presentation/screens/dashboard/dashboard.dart';
+import 'package:task_flow/presentation/screens/sign_up_screen/sign_up_screen.dart';
 import 'package:task_flow/presentation/theme/app_theme.dart';
 import 'package:task_flow/presentation/common_widgets/appbar.dart';
 
@@ -16,6 +19,34 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  Future<void> logIn() async {
+    try {
+      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      final user = userCredential.user;
+      if (user != null) {
+        Get.snackbar("Success", "Welcome ${user.email}",
+            snackPosition: SnackPosition.BOTTOM);
+        Get.offAll(() => const Dashboard());
+      }
+    } on FirebaseAuthException catch (e) {
+      String message;
+      if (e.code == 'user-not-found') {
+        message = "No user found for that email.";
+      } else if (e.code == 'wrong-password') {
+        message = "Wrong password provided.";
+      } else {
+        message = e.message ?? "Login failed";
+      }
+      Get.snackbar("Error", message, snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 CommonContainer(
                   text: "Login",
-                  onPressed: () {
-                    Get.offAll(Dashboard());
-                  },
+                  onPressed: () => logIn(),
                 ),
                 SizedBox(height: Get.height * 0.020),
                 CommonContainer(text: "Sign in with Google", color: AppColors.third, onPressed: () {}),
@@ -69,7 +98,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   text: TextSpan(
                     children: [
                       TextSpan(text: "Don't have an account? ", style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w300)),
-                      TextSpan(text: "Sign Up", style: AppTextStyles.body.copyWith(color: AppColors.primary, fontSize: 14)),
+                      TextSpan(text: "Sign Up", style: AppTextStyles.body.copyWith(color: AppColors.primary, fontSize: 14), recognizer:
+                      TapGestureRecognizer() ..onTap = (){
+                        Get.offAll(SignUpScreen());
+                      }),
                     ],
                   ),
                 ),
