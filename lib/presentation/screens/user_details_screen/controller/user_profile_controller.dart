@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../../../domain/use_cases/get_user_details_usecase.dart';
+import '../../../../domain/use_cases/get_user_details_use_case.dart';
 
 class ProfileController extends GetxController {
   final GetUserDetailsUseCase getUserUseCase;
@@ -14,6 +14,7 @@ class ProfileController extends GetxController {
   RxString email = ''.obs;
   RxString phone = ''.obs;
   RxString bio = ''.obs;
+  RxString role = ''.obs;
 
   Future<void> fetchUser() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -25,6 +26,7 @@ class ProfileController extends GetxController {
       email.value = data['email'] ?? '';
       phone.value = data['mobileNo'] ?? '';
       bio.value = data['bio'] ?? '';
+      role.value = data['role'] ?? 'User';
     } catch (e) {
       Get.snackbar('Error', 'Failed to fetch user data: $e', snackPosition: SnackPosition.BOTTOM);
     } finally {
@@ -43,6 +45,7 @@ class ProfileController extends GetxController {
         'fullName': name.value,
         'mobileNo': phone.value,
         'bio': bio.value,
+        'role': role.value,
       });
       phone.value = phone.value;
 

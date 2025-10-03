@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../domain/repositories/auth_repository_impl.dart';
-import '../../../../domain/use_cases/get_user_details_usecase.dart';
+import '../../../../domain/repositories/auth_repository.dart';
+import '../../../../domain/use_cases/get_user_details_use_case.dart';
 import '../controller/user_profile_controller.dart';
 
 mixin UserDetailsMixin<T extends StatefulWidget> on State<T> {

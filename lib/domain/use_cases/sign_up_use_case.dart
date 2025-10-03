@@ -1,26 +1,27 @@
-
 import 'dart:io';
-
-import '../../data/entities/user_entity_repository.dart';
+import '../repositories/auth_repository.dart';
 
 class SignUpUseCase {
-  final AuthRepository repository;
+  final AuthRepositoryImpl _repository;
 
-  SignUpUseCase(this.repository);
+  SignUpUseCase(this._repository);
 
-  Future<UserEntity> execute({
+  Future<void> execute({
     required String fullName,
     required String email,
-    required String mobileNo,
     required String password,
+    required String mobileNo,
     File? profileImage,
-  }) {
-    return repository.signUp(
+    String role = "user",
+  }) async {
+    await _repository.signUp(
       fullName: fullName,
       email: email,
-      mobileNo: mobileNo,
       password: password,
+      mobileNo: mobileNo,
       profileImage: profileImage,
+      role: role
     );
   }
 }
+

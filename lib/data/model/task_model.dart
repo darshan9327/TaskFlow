@@ -7,6 +7,8 @@ class TaskModel {
   final String dueDate;
   final String status;
   final String userId;
+  final String assignedTo;
+  final String reviewerId;
 
   TaskModel({
     required this.id,
@@ -17,6 +19,8 @@ class TaskModel {
     required this.dueDate,
     required this.status,
     required this.userId,
+    required this.assignedTo,
+    required this.reviewerId,
   });
 
   TaskModel copyWith({
@@ -28,30 +32,36 @@ class TaskModel {
     String? dueDate,
     String? status,
     String? userId,
+    String? assignedTo,
+    String? reviewerId,
+
   }) {
     return TaskModel(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
       category: category ?? this.category,
-      priority: priority ?? this.priority,
+      priority: priority ??   this.priority,
       dueDate: dueDate ?? this.dueDate,
       status: status ?? this.status,
       userId: userId ?? this.userId,
+      assignedTo: assignedTo ?? this.assignedTo,
+      reviewerId: reviewerId ?? this.reviewerId,
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'description': description,
-      'category': category,
-      'priority': priority,
-      'dueDate': dueDate,
-      'status': status,
-      'userId': userId,
-    };
-  }
+  Map<String, dynamic> toMap({bool isNew = true}) => {
+    'title': title,
+    'description': description,
+    'category': category,
+    'priority': priority,
+    'dueDate': dueDate,
+    'status': status,
+    'userId': userId,
+    'assignedTo': assignedTo,
+    'reviewerId': reviewerId,
+    if (isNew) 'createdAt': DateTime.now(),
+  };
 
   factory TaskModel.fromMap(String id, Map<String, dynamic> map) {
     return TaskModel(
@@ -63,6 +73,8 @@ class TaskModel {
       dueDate: map['dueDate'] ?? '',
       status: map['status'] ?? 'pending',
       userId: map['userId'] ?? '',
+      assignedTo: map['assignedTo'] ?? '',
+      reviewerId: map['reviewerId'] ?? '',
     );
   }
 }

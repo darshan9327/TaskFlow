@@ -9,9 +9,11 @@ class UserModel extends UserEntity {
     required super.mobileNo,
     super.profilePicUrl,
     this.bio = '',
+    this.role = 'user',
   });
 
   final String bio;
+  final String role;
 
   Map<String, dynamic> toMap() {
     return {
@@ -21,6 +23,7 @@ class UserModel extends UserEntity {
       'mobileNo': mobileNo,
       'profilePicUrl': profilePicUrl,
       'bio': bio,
+      'role': role,
       'createdAt': DateTime.now(),
     };
   }
@@ -33,6 +36,7 @@ class UserModel extends UserEntity {
       mobileNo: map['mobileNo'] ?? '',
       profilePicUrl: map['profilePicUrl'],
       bio: map['bio'] ?? '',
+      role: map['role'] ?? 'user',
     );
   }
 }

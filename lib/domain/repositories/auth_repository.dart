@@ -2,14 +2,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:task_flow/domain/model/user_model.dart';
 import '../../data/entities/user_entity_repository.dart';
+import '../../data/model/user_model.dart';
 
 // ======================= SignUp =======================//
+
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   @override
   Future<UserEntity> signUp({
@@ -18,17 +18,13 @@ class AuthRepositoryImpl implements AuthRepository {
     required String mobileNo,
     required String password,
     File? profileImage,
+    String role = "user",
   }) async {
     final userCredential =
     await _auth.createUserWithEmailAndPassword(email: email, password: password);
     final uid = userCredential.user!.uid;
 
     String? profilePicUrl;
-    if (profileImage != null) {
-      final ref = _storage.ref().child('profile_pics/$uid.jpg');
-      await ref.putFile(profileImage);
-      profilePicUrl = await ref.getDownloadURL();
-    }
 
     final userModel = UserModel(
       uid: uid,
@@ -36,6 +32,7 @@ class AuthRepositoryImpl implements AuthRepository {
       email: email,
       mobileNo: mobileNo,
       profilePicUrl: profilePicUrl,
+      role: role,
     );
 
     await _firestore.collection('users').doc(uid).set(userModel.toMap());
@@ -49,7 +46,6 @@ abstract class UserRepository {
   Future<Map<String, dynamic>> getUserDetails(String uid);
   Future<void> updateUserDetails(String uid, Map<String, dynamic> data);
 }
-
 class UserRepositoryImpl implements UserRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -65,6 +61,9 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<void> updateUserDetails(String uid, Map<String, dynamic> data) async {
-    await _firestore.collection('users').doc(uid).set(data, SetOptions(merge: true));
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .set(data, SetOptions(merge: true));
   }
 }

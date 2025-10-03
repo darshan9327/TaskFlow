@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:get/get.dart';
+import 'package:task_flow/presentation/screens/login_screen/login_screen.dart';
 import '../../../../domain/use_cases/sign_up_use_case.dart';
 import '../../dashboard/dashboard.dart';
 
@@ -8,7 +9,7 @@ class SignUpController extends GetxController {
 
   SignUpController(this._signUpUseCase);
 
-  RxBool isLoading = false.obs;
+  var isLoading = false.obs;
 
   Future<void> signUp({
     required String fullName,
@@ -16,6 +17,7 @@ class SignUpController extends GetxController {
     required String password,
     required String mobileNo,
     File? profilePic,
+    String role = "user",
   }) async {
     try {
       isLoading.value = true;
@@ -26,6 +28,7 @@ class SignUpController extends GetxController {
         password: password,
         mobileNo: mobileNo,
         profileImage: profilePic,
+        role: role,
       );
 
       Get.snackbar(
@@ -34,7 +37,7 @@ class SignUpController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
 
-      Get.offAll(() => Dashboard());
+      Get.offAll(() => LoginScreen());
     } catch (e) {
       Get.snackbar(
         'Error',
