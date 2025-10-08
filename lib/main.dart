@@ -22,8 +22,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  final ThemeController themeController;
-  const MyApp({super.key, required this.themeController});
+  final ThemeController? themeController;
+  const MyApp({super.key, this.themeController});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         title: 'Task Flow',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode: themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
+        themeMode: themeController!.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
         home: const Wrapper(),
       ),
     );
