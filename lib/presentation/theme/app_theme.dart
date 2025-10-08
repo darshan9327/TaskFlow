@@ -25,3 +25,35 @@ class AppTextStyles {
 
   static const TextStyle small = TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: AppColors.text);
 }
+
+class AppTheme {
+  static final lightTheme = ThemeData(
+    brightness: Brightness.light,
+    primaryColor: AppColors.primary,
+    scaffoldBackgroundColor: AppColors.background,
+    colorScheme: ColorScheme.light(
+      primary: AppColors.primary,
+      secondary: AppColors.secondary,
+      error: AppColors.error,
+    ),
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(color: AppColors.text),
+      bodyMedium: TextStyle(color: AppColors.text),
+    ),
+  );
+
+  static final darkTheme = ThemeData(
+    brightness: Brightness.dark,
+    primaryColor: AppColors.primary,
+    scaffoldBackgroundColor: Colors.black,
+    colorScheme: const ColorScheme.dark(
+      primary: AppColors.primary,
+      secondary: AppColors.secondary,
+      error: AppColors.error,
+    ),
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(color: Colors.white),
+      bodyMedium: TextStyle(color: Colors.white70),
+    ),
+  );
+}

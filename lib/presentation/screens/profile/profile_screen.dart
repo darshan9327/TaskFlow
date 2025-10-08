@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_flow/presentation/screens/notification_screen/notification_screen.dart';
+import 'package:task_flow/presentation/screens/setttings/settings_screen.dart';
 import '../../../data/model/task_model.dart';
 import '../../../domain/repositories/auth_repository.dart';
 import '../../../domain/use_cases/get_user_details_use_case.dart';
@@ -94,9 +96,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             _buildStatRow("Productivity Score","$productivityScore%", isGreen: true),
                             _buildStatRow("Active Days", "5/7"),
                             SizedBox(height: Get.height * 0.050),
-                            _buildMenuItem(text: "⚙️ Settings", onTap: () {}),
+                            _buildMenuItem(text: "⚙️ Settings", onTap: () {Get.to(SettingsScreen());}),
                             _buildMenuItem(text: "📊 Analytics", onTap: () {}),
-                            _buildMenuItem(text: "🔔 Notifications", onTap: () {}),
+                            _buildMenuItem(text: "🔔 Notifications", onTap: () {Get.to(NotificationScreen());}),
                             _buildMenuItem(text: "❓ Help & Support", onTap: () {}),
                             _buildMenuItem(
                               text: "🚪 Logout",

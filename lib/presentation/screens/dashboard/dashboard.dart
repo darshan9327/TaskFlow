@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_flow/domain/services/fcm_service.dart';
+import 'package:task_flow/domain/services/notification_service.dart';
 
 import '../../../data/model/task_model.dart';
 import '../../../domain/repositories/auth_repository.dart';
@@ -28,11 +30,15 @@ class _DashboardState extends State<Dashboard> {
   );
   final TaskService _taskService = TaskService();
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
+  NotificationService notificationService = NotificationService();
 
   @override
   void initState() {
     super.initState();
     controller.fetchUser();
+    notificationService.initNotifications();
+    notificationService.getDeviceToken();
+    FcmService.firebaseInit();
   }
 
   @override

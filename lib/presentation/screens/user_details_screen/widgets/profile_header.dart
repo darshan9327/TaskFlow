@@ -7,18 +7,8 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 50,
-          backgroundImage: const AssetImage(
-              "assets/images/profile_placeholder.png"
-          ),
-        ),
-        TextButton.icon(
-          onPressed: () {
-          },
-          icon: const Icon(Icons.edit),
-          label: const Text("Change Picture"),
-        ),
+        CircleAvatar(radius: 50, backgroundImage: const AssetImage("assets/images/profile_placeholder.png")),
+        TextButton.icon(onPressed: () {}, icon: const Icon(Icons.edit), label: const Text("Change Picture")),
       ],
     );
   }

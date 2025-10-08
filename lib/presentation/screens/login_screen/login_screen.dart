@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_flow/presentation/common_widgets/button.dart';
@@ -37,16 +39,27 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final userCredential =
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
 
       final user = userCredential.user;
       if (user != null && mounted) {
-        Get.snackbar("Success", "Welcome ${user.email}",
-            snackPosition: SnackPosition.BOTTOM);
+        final token = await FirebaseMessaging.instance.getToken();
+
+        if (token != null) {
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+            'fcmToken': token,
+          });
+          print("✅ FCM token updated on login for ${user.email}");
+        }
+
+        Get.snackbar(
+          "Success",
+          "Welcome ${user.email}",
+          snackPosition: SnackPosition.BOTTOM,
+        );
         Get.offAll(() => const Dashboard());
       }
     } on FirebaseAuthException catch (e) {
@@ -59,12 +72,10 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         message = e.message ?? "Login failed";
       }
-      Get.snackbar("Error", message,
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", message, snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
       if (!mounted) return;
-      Get.snackbar("Error", e.toString(),
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
       if (mounted) {
         setState(() {
@@ -73,7 +84,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

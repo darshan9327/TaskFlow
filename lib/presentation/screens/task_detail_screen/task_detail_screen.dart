@@ -21,6 +21,10 @@ class TaskDetailScreen extends StatefulWidget {
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
   late bool isCompleted;
+  late bool tempCompleted;
+  bool hasChanged = false;
+
+
   final TaskService _taskService = TaskService();
   String assignedUserName = "";
   String createdByName = "";
@@ -30,6 +34,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   void initState() {
     super.initState();
     isCompleted = widget.task.status == 'completed';
+    tempCompleted = isCompleted;
     fetchAssignedUserName();
     fetchCreatorName();
     fetchReviewerName();
@@ -64,7 +69,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   void _updateTaskStatus(bool value) async {
     if (widget.role == "User" && widget.task.assignedTo != widget.currentUserId) {
-      Get.snackbar("Error", "You are not assigned to this task", snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", "You are not assigned to this task", snackPosition: SnackPosition.BOTTOM,duration: Duration(seconds: 1));
       return;
     }
 
@@ -73,7 +78,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     final updatedTask = widget.task.copyWith(status: isCompleted ? 'completed' : 'pending');
 
     await _taskService.updateTask(updatedTask);
-    Get.snackbar("Success", "Task status updated", snackPosition: SnackPosition.BOTTOM);
+    Get.snackbar("Success", "Task status updated", snackPosition: SnackPosition.BOTTOM,duration: Duration(seconds: 1));
   }
 
   @override
@@ -150,10 +155,23 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
                 Row(
                   children: [
-                    Checkbox(value: isCompleted, onChanged: (value) => _updateTaskStatus(value ?? false), activeColor: AppColors.secondary),
+                    Checkbox(
+                      value: tempCompleted,
+                      onChanged: (value) {
+                        setState(() {
+                          tempCompleted = value ?? false;
+                          hasChanged = tempCompleted != isCompleted;
+                        });
+                      },
+                      activeColor: AppColors.secondary,
+                    ),
                     Text(
-                      isCompleted ? "Completed" : "Pending",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: isCompleted ? AppColors.secondary : AppColors.accent),
+                      tempCompleted ? "Completed" : "Pending",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: tempCompleted ? AppColors.secondary : AppColors.accent,
+                      ),
                     ),
                   ],
                 ),
@@ -161,9 +179,17 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 const Spacer(),
 
                 CommonContainer(
-                  text: isCompleted ? "Done" : "Back to Tasks",
-                  color: isCompleted ? AppColors.secondary : AppColors.primary,
-                  onPressed: () => Navigator.pop(context),
+                  text: hasChanged ? "Done" : "Back to Tasks",
+                  color: hasChanged
+                      ? (tempCompleted ? AppColors.secondary : AppColors.accent)
+                      : AppColors.primary,
+                  onPressed: () async {
+                    if (hasChanged) {
+                      _updateTaskStatus(tempCompleted);
+                    } else {
+                      Get.back();
+                    }
+                  },
                 ),
               ],
             ),

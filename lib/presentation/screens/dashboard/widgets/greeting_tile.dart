@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:task_flow/presentation/screens/notification_screen/notification_screen.dart';
 
 import '../../../common_widgets/list_tile.dart';
 
@@ -22,7 +24,9 @@ class GreetingTile extends StatelessWidget {
       title: getGreeting(),
       subtitle: name.isNotEmpty ? "$name ($role)" : "No Name",
       text: "🔔",
-      onTap: () {},
+      onTap: () {
+        Get.to(NotificationScreen());
+      },
     );
   }
 }
