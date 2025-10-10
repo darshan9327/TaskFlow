@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_flow/domain/services/fcm_service.dart';
@@ -28,26 +29,41 @@ class _DashboardState extends State<Dashboard> {
   final ProfileController controller = Get.put(
     ProfileController(GetUserDetailsUseCase(UserRepositoryImpl()), UpdateUserDetailsUseCase(UserRepositoryImpl())),
   );
+
   final TaskService _taskService = TaskService();
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
-  NotificationService notificationService = NotificationService();
+
+  // Services
+  final NotificationService _notificationService = NotificationService();
+  final FcmTokenService _fcmTokenService = FcmTokenService();
 
   @override
   void initState() {
     super.initState();
     controller.fetchUser();
-    notificationService.initNotifications();
-    notificationService.getDeviceToken();
-    FcmService.firebaseInit();
+    _initializeServices();
+  }
+
+  Future<void> _initializeServices() async {
+    if (userId != null) {
+      await _fcmTokenService.saveTokenToFirestore(userId!);
+
+      await _notificationService.initNotifications();
+
+      FirebaseMessaging.onMessageOpenedApp.listen((message) {
+        final taskId = message.data['taskId'];
+        final type = message.data['type'];
+        if (taskId != null) {
+          Get.toNamed('/taskDetails', arguments: {'taskId': taskId, 'type': type});
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CommonAppBar(
-        title: "🔐 Dashboard",
-        actions: [IconButton(icon: Icon(Icons.person), onPressed: () => Get.to(ProfileScreen()))],
-      ),
+      appBar: CommonAppBar(title: "🔐 Dashboard", actions: [IconButton(icon: const Icon(Icons.person), onPressed: () => Get.to(ProfileScreen()))]),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.secondary,
         onPressed: () => Get.to(() => AddTaskScreen(userRole: controller.role.value)),

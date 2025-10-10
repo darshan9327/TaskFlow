@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_flow/presentation/screens/notification_screen/notification_screen.dart';
@@ -26,13 +28,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TaskService _taskService = TaskService();
 
   final ProfileController controller = Get.put(
-    ProfileController(
-      GetUserDetailsUseCase(UserRepositoryImpl()),
-      UpdateUserDetailsUseCase(UserRepositoryImpl()),
-    ),
+    ProfileController(GetUserDetailsUseCase(UserRepositoryImpl()), UpdateUserDetailsUseCase(UserRepositoryImpl())),
     permanent: true,
   );
-
 
   @override
   void initState() {
@@ -93,19 +91,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             SizedBox(height: Get.height * 0.020),
                             _buildStatRow("Tasks Completed", completed.toString()),
-                            _buildStatRow("Productivity Score","$productivityScore%", isGreen: true),
+                            _buildStatRow("Productivity Score", "$productivityScore%", isGreen: true),
                             _buildStatRow("Active Days", "5/7"),
                             SizedBox(height: Get.height * 0.050),
-                            _buildMenuItem(text: "⚙️ Settings", onTap: () {Get.to(SettingsScreen());}),
+                            _buildMenuItem(
+                              text: "⚙️ Settings",
+                              onTap: () {
+                                Get.to(SettingsScreen());
+                              },
+                            ),
                             _buildMenuItem(text: "📊 Analytics", onTap: () {}),
-                            _buildMenuItem(text: "🔔 Notifications", onTap: () {Get.to(NotificationScreen());}),
+                            _buildMenuItem(
+                              text: "🔔 Notifications",
+                              onTap: () {
+                                Get.to(NotificationScreen());
+                              },
+                            ),
                             _buildMenuItem(text: "❓ Help & Support", onTap: () {}),
                             _buildMenuItem(
                               text: "🚪 Logout",
                               onTap: () async {
+                                if (userId != null) {
+                                  await FirebaseFirestore.instance.collection('users').doc(userId).update({'fcmToken': FieldValue.delete()});
+                                }
+
+                                await FirebaseMessaging.instance.deleteToken();
                                 await FirebaseAuth.instance.signOut();
                                 Get.offAll(() => LoginScreen());
                               },
+
                               showDivider: false,
                               color: AppColors.error,
                             ),

@@ -25,6 +25,9 @@ class _TaskListScreenState extends State<TaskListScreen>
 
   final List<String> tabs = ['All', 'Pending', 'Completed'];
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
+  final currentUser = FirebaseAuth.instance.currentUser;
+  late final currentUserId = currentUser?.uid ?? '';
+  late final currentUserName = currentUser?.displayName ?? 'Someone';
 
   String? userRole;
 
@@ -162,15 +165,35 @@ class _TaskListScreenState extends State<TaskListScreen>
           status: task.status,
           showCheckbox: true,
           onStatusChanged: (val) async {
+            final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+            String currentUserName = 'Someone';
+
+            if (currentUserId.isNotEmpty) {
+              final doc = await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(currentUserId)
+                  .get();
+              if (doc.exists) {
+                currentUserName = doc.data()?['fullName'] ?? 'Someone';
+              }
+            }
+
             await _taskService.updateTask(
               task.copyWith(status: val! ? 'completed' : 'pending'),
+              currentUserId,
+              currentUserName,
             );
           },
           onTap: () {
-            Get.to(() => TaskDetailScreen(task: task, role: '', currentUserId: userId ?? '',));
+            Get.to(() => TaskDetailScreen(
+              task: task,
+              role: '',
+              currentUserId: userId ?? '',
+            ));
           },
         );
       },
     );
   }
+
 }

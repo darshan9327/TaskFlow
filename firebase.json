@@ -1,1 +1,52 @@
-{"hosting":{"public":"build/web","ignore":["firebase.json","**/.*","**/node_modules/**"],"rewrites":[{"source":"**","destination":"/index.html"}]},"flutter":{"platforms":{"android":{"default":{"projectId":"task-flow-b8217","appId":"1:206356076885:android:cdef7d3f905a11e989b7dc","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"task-flow-b8217","configurations":{"android":"1:206356076885:android:cdef7d3f905a11e989b7dc","ios":"1:206356076885:ios:79bcee208031ec9989b7dc","macos":"1:206356076885:ios:79bcee208031ec9989b7dc","web":"1:206356076885:web:225e9b679f7b057289b7dc","windows":"1:206356076885:web:225e9b679f7b057289b7dc"}}}}}}
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "task-flow-b8217",
+          "appId": "1:206356076885:android:cdef7d3f905a11e989b7dc",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "task-flow-b8217",
+          "configurations": {
+            "android": "1:206356076885:android:cdef7d3f905a11e989b7dc",
+            "ios": "1:206356076885:ios:79bcee208031ec9989b7dc",
+            "macos": "1:206356076885:ios:79bcee208031ec9989b7dc",
+            "web": "1:206356076885:web:225e9b679f7b057289b7dc",
+            "windows": "1:206356076885:web:225e9b679f7b057289b7dc"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ]
+}

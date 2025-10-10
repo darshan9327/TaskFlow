@@ -112,8 +112,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       return;
     }
 
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final currentUserId = currentUser?.uid;
+    final currentUserName = currentUser?.displayName ?? "Someone";
+
+    if (currentUserId == null) {
       Get.snackbar("Error", "User not logged in", snackPosition: SnackPosition.BOTTOM);
       return;
     }
@@ -126,25 +129,32 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       priority: selectedPriority,
       dueDate: dateController.text.trim(),
       status: widget.taskToEdit?.status ?? 'pending',
-      userId: userId,
+      userId: currentUserId,
       assignedTo: selectedAssignedUserId,
       reviewerId: selectedReviewerUserId,
     );
 
     try {
       if (widget.taskToEdit != null) {
-        await _taskService.updateTask(task);
+        await _taskService.updateTask(task, currentUserId, currentUserName);
         Get.back(result: task);
         Get.snackbar("Updated", "Task updated successfully", snackPosition: SnackPosition.BOTTOM);
       } else {
-        await _taskService.addTask(task, userId);
+        await _taskService.addTask(task, currentUserId);
         Get.back(result: task);
         Get.snackbar("Success", "Task added successfully", snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
+
 
   void _clearForm() {
     setState(() {

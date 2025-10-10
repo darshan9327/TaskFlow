@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_flow/presentation/common_widgets/button.dart';
@@ -23,7 +24,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   late bool isCompleted;
   late bool tempCompleted;
   bool hasChanged = false;
-
 
   final TaskService _taskService = TaskService();
   String assignedUserName = "";
@@ -69,16 +69,43 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   void _updateTaskStatus(bool value) async {
     if (widget.role == "User" && widget.task.assignedTo != widget.currentUserId) {
-      Get.snackbar("Error", "You are not assigned to this task", snackPosition: SnackPosition.BOTTOM,duration: Duration(seconds: 1));
+      Get.snackbar(
+        "Error",
+        "You are not assigned to this task",
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 1),
+      );
       return;
     }
 
     setState(() => isCompleted = value);
 
-    final updatedTask = widget.task.copyWith(status: isCompleted ? 'completed' : 'pending');
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-    await _taskService.updateTask(updatedTask);
-    Get.snackbar("Success", "Task status updated", snackPosition: SnackPosition.BOTTOM,duration: Duration(seconds: 1));
+    String currentUserName = "Someone";
+    if (currentUserId.isNotEmpty) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(currentUserId).get();
+      if (doc.exists) {
+        currentUserName = doc.data()?['fullName'] ?? "Someone";
+      }
+    }
+
+    final updatedTask = widget.task.copyWith(
+      status: value ? 'completed' : 'pending',
+    );
+
+    await _taskService.updateTask(
+      updatedTask,
+      currentUserId,
+      currentUserName,
+    );
+
+    Get.snackbar(
+      "Success",
+      "Task status updated",
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 1),
+    );
   }
 
   @override
@@ -167,11 +194,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     ),
                     Text(
                       tempCompleted ? "Completed" : "Pending",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: tempCompleted ? AppColors.secondary : AppColors.accent,
-                      ),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: tempCompleted ? AppColors.secondary : AppColors.accent),
                     ),
                   ],
                 ),
@@ -180,9 +203,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
                 CommonContainer(
                   text: hasChanged ? "Done" : "Back to Tasks",
-                  color: hasChanged
-                      ? (tempCompleted ? AppColors.secondary : AppColors.accent)
-                      : AppColors.primary,
+                  color: hasChanged ? (tempCompleted ? AppColors.secondary : AppColors.accent) : AppColors.primary,
                   onPressed: () async {
                     if (hasChanged) {
                       _updateTaskStatus(tempCompleted);

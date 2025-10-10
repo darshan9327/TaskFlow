@@ -30,15 +30,29 @@ class _LoginScreenState extends State<LoginScreen> {
     passwordController.dispose();
     super.dispose();
   }
+  //
+  // Future<void> clearPreviousUserToken() async {
+  //   final prevUser = FirebaseAuth.instance.currentUser;
+  //   if (prevUser != null) {
+  //     await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(prevUser.uid)
+  //         .update({'fcmToken': FieldValue.delete()});
+  //     print("🗑️ Cleared previous user's FCM token");
+  //   }
+  // }
 
   Future<void> logIn() async {
-    if (!mounted) return;
-
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
+      final prevUser = FirebaseAuth.instance.currentUser;
+      if (prevUser != null) {
+        await FirebaseFirestore.instance.collection('users').doc(prevUser.uid).update({'fcmToken': FieldValue.delete()});
+        print("🗑️ Cleared previous user's FCM token");
+      }
+      ;
+
       final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
@@ -47,23 +61,20 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = userCredential.user;
       if (user != null && mounted) {
         final token = await FirebaseMessaging.instance.getToken();
-
         if (token != null) {
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-            'fcmToken': token,
-          });
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).update({'fcmToken': token});
           print("✅ FCM token updated on login for ${user.email}");
         }
 
-        Get.snackbar(
-          "Success",
-          "Welcome ${user.email}",
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        // FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+        //   await FirebaseFirestore.instance.collection('users').doc(user.uid).update({'fcmToken': newToken});
+        //   print("🔁 FCM token refreshed for ${user.email}");
+        // });
+
+        Get.snackbar("Success", "Welcome ${user.email}", snackPosition: SnackPosition.BOTTOM);
         Get.offAll(() => const Dashboard());
       }
     } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
       String message;
       if (e.code == 'user-not-found') {
         message = "No user found for that email.";
@@ -74,14 +85,9 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       Get.snackbar("Error", message, snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
-      if (!mounted) return;
       Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -161,11 +167,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   _isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : CommonContainer(text: "Login",onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      logIn();
-                    }
-                  }),
+                      : CommonContainer(
+                        text: "Login",
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            logIn();
+                          }
+                        },
+                      ),
 
                   SizedBox(height: Get.height * 0.020),
                   CommonContainer(text: "Sign in with Google", color: AppColors.third, onPressed: () {}),
