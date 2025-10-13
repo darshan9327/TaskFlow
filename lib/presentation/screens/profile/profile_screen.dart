@@ -3,8 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_flow/presentation/screens/notification_screen/notification_screen.dart';
-import 'package:task_flow/presentation/screens/setttings/settings_screen.dart';
+import 'package:task_flow/presentation/screens/setting_screen/settings_screen.dart';
 import '../../../data/model/task_model.dart';
 import '../../../domain/repositories/auth_repository.dart';
 import '../../../domain/use_cases/get_user_details_use_case.dart';
@@ -12,6 +11,7 @@ import '../add_new_task/controller/task_service_controller.dart';
 import '../../common_widgets/appbar.dart';
 import '../../theme/app_theme.dart';
 import '../login_screen/login_screen.dart';
+import '../notifications/notification_screen.dart';
 import '../user_details_screen/controller/user_profile_controller.dart';
 import '../user_details_screen/user_details_screen.dart';
 

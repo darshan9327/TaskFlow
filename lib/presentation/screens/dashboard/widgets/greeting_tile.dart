@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_flow/presentation/screens/notification_screen/notification_screen.dart';
+import 'package:task_flow/presentation/screens/notifications/notification_screen.dart';
 
 import '../../../common_widgets/list_tile.dart';
 

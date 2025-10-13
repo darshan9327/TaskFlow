@@ -23,7 +23,7 @@ class _TaskListScreenState extends State<TaskListScreen>
   late TabController _tabController;
   final TaskService _taskService = TaskService();
 
-  final List<String> tabs = ['All', 'Pending', 'Completed'];
+  final List<String> tabs = ['All', 'Pending', 'In Progress', 'Completed'];
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
   final currentUser = FirebaseAuth.instance.currentUser;
   late final currentUserId = currentUser?.uid ?? '';
@@ -35,10 +35,8 @@ class _TaskListScreenState extends State<TaskListScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
-
     final initialIndex = Get.arguments ?? 0;
     _tabController.index = initialIndex;
-
     _loadUserRole();
   }
 
@@ -80,9 +78,7 @@ class _TaskListScreenState extends State<TaskListScreen>
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.secondary,
-        onPressed: () => Get.to(
-              () => AddTaskScreen(userRole: userRole!),
-        ),
+        onPressed: () => Get.to(() => AddTaskScreen(userRole: userRole!)),
         child: const Icon(Icons.add, color: AppColors.white),
       ),
       body: Padding(
@@ -91,23 +87,21 @@ class _TaskListScreenState extends State<TaskListScreen>
           children: [
             const SizedBox(height: 10),
             Container(
-              height: 55,
+              height: 50,
               decoration: BoxDecoration(
                 color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(25),
               ),
               child: TabBar(
                 controller: _tabController,
                 tabs: tabs.map((tab) => Tab(text: tab)).toList(),
                 indicator: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(20),
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(25),
                 ),
                 labelColor: Colors.white,
-                unselectedLabelColor: Colors.black,
+                unselectedLabelColor: Colors.black87,
                 indicatorSize: TabBarIndicatorSize.tab,
-                indicatorPadding:
-                const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                 overlayColor: WidgetStateColor.transparent,
                 dividerColor: Colors.transparent,
               ),
@@ -126,16 +120,28 @@ class _TaskListScreenState extends State<TaskListScreen>
 
                   final tasks = snapshot.data!;
 
+                  List<TaskModel> normalize(List<TaskModel> list) => list
+                      .map((t) => t.copyWith(
+                      status: t.status.trim().toLowerCase()))
+                      .toList();
+
+                  final allTasks = normalize(tasks);
+                  final pendingTasks =
+                  allTasks.where((t) => t.status == 'pending').toList();
+                  final inProgressTasks = allTasks
+                      .where((t) =>
+                  t.status == 'in progress')
+                      .toList();
+                  final completedTasks =
+                  allTasks.where((t) => t.status == 'completed').toList();
+
                   return TabBarView(
                     controller: _tabController,
                     children: [
-                      _buildTaskList(tasks),
-                      _buildTaskList(tasks
-                          .where((t) => t.status.toLowerCase() == 'pending')
-                          .toList()),
-                      _buildTaskList(tasks
-                          .where((t) => t.status.toLowerCase() == 'completed')
-                          .toList()),
+                      _buildTaskList(allTasks),
+                      _buildTaskList(pendingTasks),
+                      _buildTaskList(inProgressTasks),
+                      _buildTaskList(completedTasks),
                     ],
                   );
                 },
@@ -149,45 +155,30 @@ class _TaskListScreenState extends State<TaskListScreen>
 
   Widget _buildTaskList(List<TaskModel> filteredTasks) {
     if (filteredTasks.isEmpty) {
-      return const Center(child: Text("No tasks available"));
+      return const Center(
+        child: Text(
+          "No tasks available",
+          style: TextStyle(fontSize: 16, color: Colors.black54),
+        ),
+      );
     }
 
-    return ListView.builder(
+    return ListView.separated(
       itemCount: filteredTasks.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final task = filteredTasks[index];
+        final statusColor = AppColors.getStatusColor(task.status);
+
         return TaskCard(
           title: task.title,
           time: "${task.category} • ${task.priority} Priority",
-          color: task.status.toLowerCase() == 'completed'
-              ? Colors.green
-              : Colors.orange,
-          status: task.status,
-          showCheckbox: true,
-          onStatusChanged: (val) async {
-            final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
-            String currentUserName = 'Someone';
-
-            if (currentUserId.isNotEmpty) {
-              final doc = await FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(currentUserId)
-                  .get();
-              if (doc.exists) {
-                currentUserName = doc.data()?['fullName'] ?? 'Someone';
-              }
-            }
-
-            await _taskService.updateTask(
-              task.copyWith(status: val! ? 'completed' : 'pending'),
-              currentUserId,
-              currentUserName,
-            );
-          },
+          color: statusColor,
+          status: _capitalize(task.status),
           onTap: () {
             Get.to(() => TaskDetailScreen(
               task: task,
-              role: '',
+              role: userRole ?? '',
               currentUserId: userId ?? '',
             ));
           },
@@ -195,5 +186,6 @@ class _TaskListScreenState extends State<TaskListScreen>
       },
     );
   }
-
+  String _capitalize(String text) =>
+      text.isEmpty ? '' : text[0].toUpperCase() + text.substring(1);
 }

@@ -10,7 +10,12 @@ class TaskStatsGrid extends StatelessWidget {
   final String userId;
   final String role;
 
-  const TaskStatsGrid({super.key, required this.tasks, required this.userId, required this.role});
+  const TaskStatsGrid({
+    super.key,
+    required this.tasks,
+    required this.userId,
+    required this.role,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +26,9 @@ class TaskStatsGrid extends StatelessWidget {
     final total = userTasks.length;
     final completed = userTasks.where((t) => t.status == 'completed').length;
     final pending = userTasks.where((t) => t.status == 'pending').length;
-
+    final inProgress = userTasks
+        .where((t) => t.status.toLowerCase() == 'in progress')
+        .length;
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -30,36 +37,80 @@ class TaskStatsGrid extends StatelessWidget {
       mainAxisSpacing: 15,
       childAspectRatio: 1.5,
       children: [
-        StatCard(title: "Total Tasks", value: total.toString(), onPressed: () => Get.to(() => TaskListScreen(), arguments: 0)),
-        StatCard(title: "Completed", value: completed.toString(), onPressed: () => Get.to(() => TaskListScreen(), arguments: 2)),
-        StatCard(title: "Pending", value: pending.toString(), onPressed: () => Get.to(() => TaskListScreen(), arguments: 1)),
+        StatCard(
+          title: "Total Tasks",
+          value: total.toString(),
+          onPressed: () => Get.to(() => TaskListScreen(), arguments: 0),
+        ),
+        StatCard(
+          title: "Pending",
+          value: pending.toString(),
+          color: Colors.orange,
+          onPressed: () => Get.to(() => TaskListScreen(), arguments: 1),
+        ),
+        StatCard(
+          title: "In Progress",
+          value: inProgress.toString(),
+          color: Colors.blue,
+          onPressed: () => Get.to(() => TaskListScreen(), arguments: 2),
+        ),
+        StatCard(
+          title: "Completed",
+          value: completed.toString(),
+          color: Colors.green,
+          onPressed: () => Get.to(() => TaskListScreen(), arguments: 3),
+        ),
       ],
     );
   }
 }
 
-
 class StatCard extends StatelessWidget {
   final String title;
   final String value;
   final VoidCallback? onPressed;
-  const StatCard({super.key, required this.title, required this.value, this.onPressed});
+  final Color? color;
+
+  const StatCard({
+    super.key,
+    required this.title,
+    required this.value,
+    this.onPressed,
+    this.color,
+  });
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPressed,
       child: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [Color(0xff2575fc), Color(0xff6a11cb)], begin: Alignment.bottomLeft, end: Alignment.topRight),
+          gradient: LinearGradient(
+            colors: color != null
+                ? [color!.withOpacity(0.6), color!]
+                : [const Color(0xff2575fc), const Color(0xff6a11cb)],
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(value, style: AppTextStyles.heading1.copyWith(color: AppColors.white)),
+              Text(
+                value,
+                style: AppTextStyles.heading1.copyWith(color: AppColors.white),
+              ),
               const SizedBox(height: 4),
-              Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: 12)),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w300,
+                  fontSize: 12,
+                ),
+              ),
             ],
           ),
         ),
@@ -67,4 +118,3 @@ class StatCard extends StatelessWidget {
     );
   }
 }
-

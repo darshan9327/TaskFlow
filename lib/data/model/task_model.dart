@@ -71,7 +71,7 @@ class TaskModel {
       category: map['category'] ?? '',
       priority: map['priority'] ?? '',
       dueDate: map['dueDate'] ?? '',
-      status: map['status'] ?? 'pending',
+      status: map['status'] ?? '',
       userId: map['userId'] ?? '',
       assignedTo: map['assignedTo'] ?? '',
       reviewerId: map['reviewerId'] ?? '',

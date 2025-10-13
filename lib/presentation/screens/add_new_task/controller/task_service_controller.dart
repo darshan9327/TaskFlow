@@ -5,39 +5,65 @@ import '../../../../data/model/task_model.dart';
 class TaskService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // ===============================
+  // Create a new task
+  // ===============================
   Future<void> addTask(TaskModel task, String userId) async {
     final docRef = _firestore.collection('tasks').doc();
     final newTask = task.copyWith(id: docRef.id);
     final taskMap = newTask.toMap();
     taskMap['id'] = docRef.id;
+
+    taskMap['lastUpdatedBy'] = userId;
+    taskMap['createdAt'] = FieldValue.serverTimestamp();
+    taskMap['updatedAt'] = FieldValue.serverTimestamp();
+
     await docRef.set(taskMap);
   }
 
-
-  Future<void> updateTask(TaskModel task, String currentUserId, String currentUserName) async {
+  // ===============================
+  // Update existing task
+  // ===============================
+  Future<void> updateTask(
+      TaskModel task,
+      String currentUserId,
+      String currentUserName,
+      ) async {
     if (task.id.isEmpty) return;
 
     await _firestore.collection('tasks').doc(task.id).update({
       ...task.toMap(isNew: false),
+
       'updatedById': currentUserId,
       'updatedByName': currentUserName,
+      'lastUpdatedBy': currentUserId,
+
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 
-
+  // ===============================
+  // Delete task
+  // ===============================
   Future<void> deleteTask(String taskId) async {
     await _firestore.collection('tasks').doc(taskId).delete();
   }
 
+  // ===============================
+  // Stream tasks for a single user (assigned)
+  // ===============================
   Stream<List<TaskModel>> getTasksForUser(String userId) {
     return _firestore
         .collection('tasks')
         .where('assignedTo', isEqualTo: userId)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => TaskModel.fromMap(doc.id, doc.data())).toList());
+        .map((snapshot) =>
+        snapshot.docs.map((doc) => TaskModel.fromMap(doc.id, doc.data())).toList());
   }
 
+  // ===============================
+  // Stream tasks where user is creator, assignee, or reviewer
+  // ===============================
   Stream<List<TaskModel>> getTasksForAnyRole(String userId) {
     final tasksCollection = FirebaseFirestore.instance.collection('tasks');
 

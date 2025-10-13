@@ -10,6 +10,19 @@ class AppColors {
   static const Color text = Color(0xFF212121);
   static const Color black = Color(0xFF000000);
   static const Color white = Color(0xFFFFFFFF);
+
+  static Color getStatusColor(String status) {
+    switch (status.trim().toLowerCase()) {
+      case 'completed':
+        return Colors.green.shade600;
+      case 'in progress':
+        return Colors.blue.shade600;
+      case 'pending':
+        return Colors.orange.shade600;
+      default:
+        return Colors.grey.shade400;
+    }
+  }
 }
 
 class AppTextStyles {

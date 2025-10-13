@@ -1,10 +1,14 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:app_settings/app_settings.dart';
+
+import '../../data/model/task_model.dart';
+import '../../presentation/screens/task_detail_screen/task_detail_screen.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -17,8 +21,7 @@ class NotificationService {
   NotificationService._internal();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications =
-  FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
   /// Initialize FCM + local notifications
   Future<void> initNotifications() async {
@@ -53,18 +56,10 @@ class NotificationService {
 
   /// Request permission for Android 13+ / iOS
   Future<void> _requestPermission() async {
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    NotificationSettings settings = await _firebaseMessaging.requestPermission(alert: true, badge: true, sound: true);
 
     if (settings.authorizationStatus != AuthorizationStatus.authorized) {
-      Get.snackbar(
-        'Notifications Disabled',
-        'Please enable notifications from settings',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar('Notifications Disabled', 'Please enable notifications from settings', snackPosition: SnackPosition.BOTTOM);
 
       Future.delayed(const Duration(seconds: 2), () {
         AppSettings.openAppSettings(type: AppSettingsType.notification);
@@ -76,11 +71,9 @@ class NotificationService {
 
   /// Initialize local notifications plugin
   Future<void> _initLocalNotifications() async {
-    const AndroidInitializationSettings androidSettings =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+    const AndroidInitializationSettings androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const InitializationSettings initSettings =
-    InitializationSettings(android: androidSettings);
+    const InitializationSettings initSettings = InitializationSettings(android: androidSettings);
 
     await _localNotifications.initialize(
       initSettings,
@@ -100,9 +93,7 @@ class NotificationService {
       importance: Importance.high,
     );
 
-    final androidPlugin =
-    _localNotifications.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin = _localNotifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     await androidPlugin?.createNotificationChannel(channel);
   }
 
@@ -117,8 +108,7 @@ class NotificationService {
       playSound: true,
     );
 
-    const NotificationDetails platformDetails =
-    NotificationDetails(android: androidDetails);
+    const NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
 
     await _localNotifications.show(
       message.hashCode,
@@ -130,12 +120,39 @@ class NotificationService {
   }
 
   /// Handle notification click
-  void _handleNotificationClick(Map<String, dynamic> data) {
+  void _handleNotificationClick(Map<String, dynamic> data) async {
     final taskId = data['taskId'];
-    final type = data['type'];
 
-    if (taskId != null) {
-      Get.toNamed('/taskDetails', arguments: {'taskId': taskId, 'type': type});
+    if (taskId != null && taskId.isNotEmpty) {
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('tasks')
+            .doc(taskId)
+            .get();
+
+        if (doc.exists) {
+          final task = TaskModel.fromMap(doc.id, doc.data()!);
+
+          final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+          final userDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUserId)
+              .get();
+          final role = userDoc.data()?['role'] ?? 'User';
+
+          // Navigate to the detail screen
+          Get.to(() => TaskDetailScreen(
+            task: task,
+            role: role,
+            currentUserId: currentUserId,
+          ));
+        } else {
+          Get.snackbar('Error', 'Task not found or deleted');
+        }
+      } catch (e) {
+        Get.snackbar('Error', 'Failed to load task details');
+        print('❌ Error loading task: $e');
+      }
     } else {
       Get.snackbar(
         data['title'] ?? 'Notification',
@@ -144,4 +161,5 @@ class NotificationService {
       );
     }
   }
+
 }
